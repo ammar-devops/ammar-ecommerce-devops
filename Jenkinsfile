@@ -5,14 +5,34 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                echo 'Repository cloned successfully.'
+                checkout scm
             }
         }
 
-        stage('Workspace') {
+        stage('Environment') {
             steps {
-                sh 'pwd'
-                sh 'ls -la'
+                sh '''
+                echo "===== Current Directory ====="
+                pwd
+
+                echo "===== Files ====="
+                ls -la
+
+                echo "===== Git ====="
+                git --version
+
+                echo "===== Node ====="
+                node -v
+
+                echo "===== NPM ====="
+                npm -v
+
+                echo "===== Docker ====="
+                docker --version
+
+                echo "===== Docker Containers ====="
+                docker ps
+                '''
             }
         }
     }
