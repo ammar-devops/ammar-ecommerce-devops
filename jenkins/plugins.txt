@@ -1,0 +1,9 @@
+git
+github
+github-branch-source
+workflow-aggregator
+pipeline-stage-view
+docker-workflow
+ssh-agent
+credentials-binding
+blueocean
