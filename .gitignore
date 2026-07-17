@@ -1,0 +1,23 @@
+# Node
+**/node_modules
+
+# Environment
+**/.env
+
+# Logs
+*.log
+npm-debug.log*
+
+# Build
+frontend/dist
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode
+.idea
+
+# Docker
+postgres-data

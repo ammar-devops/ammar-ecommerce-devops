@@ -1,0 +1,64 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+
+    image: ecommerce-backend:prod
+
+    ports:
+      - "5000:5000"
+
+    env_file:
+      - ./backend/.env
+
+    depends_on:
+      - postgres
+
+    healthcheck:
+    test: ["CMD", "wget", "--spider", "-q", "http://localhost:5000/api/health"]
+    interval: 30s
+    timeout: 5s
+    retries: 3
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+
+    image: ecommerce-frontend:prod
+
+    ports:
+      - "80:80"
+
+    depends_on:
+      - backend
+
+  postgres:
+    image: postgres:16
+
+    environment:
+      POSTGRES_USER: ammar
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ecommerce
+
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:
+
+  nginx:
+  build:
+    context: ./nginx
+
+  image: ecommerce-nginx:prod
+
+  container_name: ecommerce-nginx
+
+  ports:
+    - "80:80"
+
+  depends_on:
+    - frontend
+    - backend

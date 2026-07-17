@@ -1,0 +1,51 @@
+services:
+  backend:
+    build: ./backend
+    image: ecommerce-backend:v1
+    container_name: ecommerce-backend
+
+    ports:
+      - "5000:5000"
+
+    env_file:
+      - ./backend/.env
+
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+
+    depends_on:
+      - postgres
+
+  frontend:
+    build: ./frontend
+    image: ecommerce-frontend:v1
+    container_name: ecommerce-frontend
+
+    ports:
+      - "5173:5173"
+
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+    depends_on:
+      - backend
+
+  postgres:
+    image: postgres:16
+    container_name: ecommerce-postgres
+
+    environment:
+      POSTGRES_USER: ammar
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ecommerce
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:
