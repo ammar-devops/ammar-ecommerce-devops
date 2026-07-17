@@ -1,0 +1,41 @@
+name: Ecommerce CI
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Backend Dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Install Frontend Dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build Frontend
+        working-directory: frontend
+        run: npm run build
+
+      - name: Build Backend Docker Image
+        run: docker build -f backend/Dockerfile -t ecommerce-backend ./backend
+
+      - name: Build Frontend Docker Image
+        run: docker build -f frontend/Dockerfile -t ecommerce-frontend ./frontend
