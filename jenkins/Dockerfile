@@ -3,13 +3,9 @@ FROM jenkins/jenkins:lts-jdk21
 USER root
 
 RUN apt-get update && \
-    apt-get install -y \
-    docker.io \
-    git \
-    curl \
-    unzip \
-    nodejs \
-    npm && \
+    apt-get install -y git curl unzip docker.io && \
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
     rm -rf /var/lib/apt/lists/*
 
 COPY plugins.txt /usr/share/jenkins/ref/plugins.txt

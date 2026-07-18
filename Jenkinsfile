@@ -12,27 +12,39 @@ pipeline {
         stage('Environment') {
             steps {
                 sh '''
-                echo "===== Current Directory ====="
-                pwd
-
-                echo "===== Files ====="
-                ls -la
-
-                echo "===== Git ====="
-                git --version
-
-                echo "===== Node ====="
+                echo "===== Environment ====="
                 node -v
-
-                echo "===== NPM ====="
                 npm -v
-
-                echo "===== Docker ====="
+                git --version
                 docker --version
-
-                echo "===== Docker Containers ====="
-                docker ps
+                docker compose version
+                pwd
+                ls -la
                 '''
+            }
+        }
+
+        stage('Backend Install') {
+            steps {
+                dir('backend') {
+                    sh 'npm install'
+                }
+            }
+        }
+
+        stage('Frontend Install') {
+            steps {
+                dir('frontend') {
+                    sh 'npm install'
+                }
+            }
+        }
+
+        stage('Frontend Build') {
+            steps {
+                dir('frontend') {
+                    sh 'npm run build'
+                }
             }
         }
     }
