@@ -12,30 +12,41 @@ pipeline {
         stage('Environment') {
             steps {
                 sh '''
-                echo "===== Environment ====="
                 node -v
                 npm -v
                 git --version
                 docker --version
-                pwd
-                ls -la
                 '''
             }
         }
 
-        stage('Backend Install') {
+        stage('Backend') {
             steps {
                 dir('backend') {
-                    sh 'npm install'
+                    sh '''
+                    npm install
+                    '''
                 }
             }
         }
 
-        stage('Frontend Install') {
+        stage('Frontend') {
             steps {
                 dir('frontend') {
-                    sh 'npm install'
+                    sh '''
+                    npm install
+                    npm run build
+                    '''
                 }
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                sh '''
+                docker build -t ecommerce-backend:v1 ./backend
+                docker build -t ecommerce-frontend:v1 ./frontend
+                '''
             }
         }
     }
