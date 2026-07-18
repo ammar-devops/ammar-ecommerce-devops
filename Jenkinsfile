@@ -17,7 +17,6 @@ pipeline {
                 npm -v
                 git --version
                 docker --version
-                docker compose version
                 pwd
                 ls -la
                 '''
