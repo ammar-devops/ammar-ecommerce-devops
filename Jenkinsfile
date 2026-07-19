@@ -11,70 +11,79 @@ pipeline {
 
         stage('Update Source') {
             steps {
-                sh '''
-                cd ${APP_DIR}
-                git fetch origin
-                git reset --hard origin/${BRANCH}
-                '''
+                dir("${APP_DIR}") {
+                    sh '''
+                        git fetch origin
+                        git reset --hard origin/${BRANCH}
+                    '''
+                }
             }
         }
 
         stage('Stop Old Containers') {
             steps {
-                sh '''
-                cd ${APP_DIR}
-                docker compose -f ${COMPOSE_FILE} down || true
-                '''
+                dir("${APP_DIR}") {
+                    sh 'docker compose -f ${COMPOSE_FILE} down || true'
+                }
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy Application') {
             steps {
-                sh '''
-                cd ${APP_DIR}
-                docker compose -f ${COMPOSE_FILE} up -d --build
-                '''
+                dir("${APP_DIR}") {
+                    sh 'docker compose -f ${COMPOSE_FILE} up -d --build'
+                }
             }
         }
 
-        stage('Show Containers') {
+        stage('Show Running Containers') {
             steps {
-                sh '''
-                cd ${APP_DIR}
-                docker compose -f ${COMPOSE_FILE} ps
-                '''
+                dir("${APP_DIR}") {
+                    sh 'docker compose -f ${COMPOSE_FILE} ps'
+                }
             }
         }
 
         stage('Health Check') {
             steps {
                 sh '''
-                sleep 20
-                curl -f http://localhost:5000/api/health
+                    echo "Waiting for application..."
+                    sleep 20
+
+                    curl -f http://localhost:5000/api/health
+
+                    echo ""
+                    echo "Application is Healthy"
                 '''
             }
         }
     }
 
     post {
-
         success {
-            echo "Deployment Successful"
+            echo "Deployment Successful!"
         }
 
         failure {
+            echo "Deployment Failed!"
 
-            sh '''
-            cd ${APP_DIR}
+            dir("${APP_DIR}") {
+                sh '''
+                    docker compose -f ${COMPOSE_FILE} ps || true
 
-            docker compose -f ${COMPOSE_FILE} ps || true
+                    echo ""
+                    echo "===== Backend Logs ====="
+                    docker compose -f ${COMPOSE_FILE} logs backend --tail=100 || true
 
-            docker compose -f ${COMPOSE_FILE} logs backend --tail=100 || true
+                    echo ""
+                    echo "===== Frontend Logs ====="
+                    docker compose -f ${COMPOSE_FILE} logs frontend --tail=100 || true
 
-            docker compose -f ${COMPOSE_FILE} logs frontend --tail=100 || true
-
-            docker compose -f ${COMPOSE_FILE} logs postgres --tail=100 || true
-            '''
+                    echo ""
+                    echo "===== Database Logs ====="
+                    docker compose -f ${COMPOSE_FILE} logs postgres --tail=100 || true
+                '''
+            }
         }
     }
 }
