@@ -54,14 +54,6 @@ pipeline {
             }
         }
 
-        stage('Build Docker Images') {
-            steps {
-                sh '''
-                docker compose -f ${COMPOSE_FILE} build
-                '''
-            }
-        }
-
         stage('Deploy') {
             steps {
                 sh '''
@@ -73,11 +65,30 @@ pipeline {
         stage('Health Check') {
             steps {
                 sh '''
-                sleep 15
+                echo "===================================="
+                echo "Waiting for Backend..."
+                echo "===================================="
 
-                curl -f http://localhost:5000/api/health
+                for i in $(seq 1 12)
+                do
+                    if curl -fs http://localhost:5000/api/health >/dev/null; then
+                        echo "Backend is Healthy"
+                        curl http://localhost:5000/api/health
+                        echo ""
+                        curl -I http://localhost || true
+                        exit 0
+                    fi
 
-                curl -I http://localhost
+                    echo "Attempt $i/12 - Backend not ready..."
+                    sleep 5
+                done
+
+                echo "Health Check Failed"
+
+                docker compose -f ${COMPOSE_FILE} ps
+                docker compose -f ${COMPOSE_FILE} logs --tail=100
+
+                exit 1
                 '''
             }
         }
@@ -85,7 +96,7 @@ pipeline {
         stage('Docker Cleanup') {
             steps {
                 sh '''
-                docker image prune -f
+                docker image prune -f || true
                 '''
             }
         }
@@ -94,11 +105,15 @@ pipeline {
     post {
 
         success {
-            echo '✅ Deployment Successful'
+            echo 'Deployment Successful'
+
+            sh '''
+            docker compose -f ${COMPOSE_FILE} ps
+            '''
         }
 
         failure {
-            echo '❌ Deployment Failed'
+            echo 'Deployment Failed'
 
             sh '''
             docker compose -f ${COMPOSE_FILE} ps || true
