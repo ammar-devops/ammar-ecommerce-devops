@@ -21,3 +21,11 @@ Thumbs.db
 
 # Docker
 postgres-data
+
+# Jenkins
+jenkins/jenkins_home/
+jenkins/jenkins_home/**
+
+# Frontend env files
+frontend/.env.development
+frontend/.env.production
