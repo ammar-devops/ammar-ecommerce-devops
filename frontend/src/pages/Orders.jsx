@@ -9,7 +9,7 @@ function Orders() {
 
   async function loadOrders() {
     try {
-      const res = await fetch("http://localhost:5000/api/orders");
+      const res = await fetch("/api/orders");
       const data = await res.json();
       setOrders(data);
     } catch (err) {
