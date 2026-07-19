@@ -1,33 +1,51 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useCart } from "../hooks/useCart";
 
 function Navbar() {
   const { cart } = useCart();
+  const location = useLocation();
 
   const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
 
+  const isActive = (path) => location.pathname === path;
+
   return (
     <nav className="navbar">
-      <h2>
-        <Link to="/">🛒 Ammar Shop</Link>
-      </h2>
+      <div className="logo">
+        <Link to="/">
+          🛒 <span>Ammar Shop</span>
+        </Link>
+      </div>
 
-      <ul>
+      <ul className="nav-links">
         <li>
-          <Link to="/">Home</Link>
+          <Link className={isActive("/") ? "active" : ""} to="/">
+            Home
+          </Link>
         </li>
 
         <li>
-          <Link to="/products">Products</Link>
+          <Link
+            className={isActive("/products") ? "active" : ""}
+            to="/products"
+          >
+            Products
+          </Link>
         </li>
 
         <li>
-          <Link to="/orders">Orders</Link>
-        </li>
-        <li>
-          <Link to="/cart">Cart ({totalItems})</Link>
+          <Link className={isActive("/orders") ? "active" : ""} to="/orders">
+            Orders
+          </Link>
         </li>
       </ul>
+
+      <div className="cart-box">
+        <Link to="/cart">
+          🛒 Cart
+          <span className="cart-badge">{totalItems}</span>
+        </Link>
+      </div>
     </nav>
   );
 }

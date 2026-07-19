@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../hooks/useCart";
 
 function ProductCard({ product }) {
@@ -7,18 +7,37 @@ function ProductCard({ product }) {
 
   function handleAddToCart() {
     addToCart(product);
-
-    // Redirect to Cart page
     navigate("/cart");
   }
 
+  const image =
+    product.image_url && product.image_url.trim() !== ""
+      ? product.image_url
+      : "https://placehold.co/300x220?text=Product";
+
   return (
     <div className="card">
-      <div className="product-image">📦</div>
+      <Link to={`/products/${product.id}`}>
+        <img src={image} alt={product.name} className="product-image" />
+      </Link>
 
-      <h2>{product.name}</h2>
+      <div className="product-category">{product.category}</div>
 
-      <h3>₹ {Number(product.price).toLocaleString()}</h3>
+      <h2>
+        <Link to={`/products/${product.id}`} className="product-link">
+          {product.name}
+        </Link>
+      </h2>
+
+      <p className="brand">{product.brand}</p>
+
+      <div className="rating">⭐ {product.rating}</div>
+
+      <h3 className="price">₹ {Number(product.price).toLocaleString()}</h3>
+
+      <p className="stock">
+        {product.stock > 0 ? "✅ In Stock" : "❌ Out of Stock"}
+      </p>
 
       <button className="btn" onClick={handleAddToCart}>
         Add To Cart
