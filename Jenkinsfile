@@ -44,7 +44,7 @@ pipeline {
                     echo "Waiting for application..."
                     sleep 20
 
-                    curl -f http://localhost:5000/api/health
+                    curl -f http://backend:5000/api/health
 
                     echo ""
                     echo "Application is Healthy"
