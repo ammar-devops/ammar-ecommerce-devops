@@ -4,14 +4,16 @@ pipeline {
     environment {
         APP_DIR = "/home/ubuntu/ammar-ecommerce-devops"
         COMPOSE_FILE = "docker-compose.prod.yml"
-        BRANCH = "main"
     }
 
+    stages {
 
         stage('Stop Old Containers') {
             steps {
                 dir("${APP_DIR}") {
-                    sh 'docker compose -f ${COMPOSE_FILE} down || true'
+                    sh '''
+                        docker compose -f ${COMPOSE_FILE} down || true
+                    '''
                 }
             }
         }
@@ -19,7 +21,9 @@ pipeline {
         stage('Deploy Application') {
             steps {
                 dir("${APP_DIR}") {
-                    sh 'docker compose -f ${COMPOSE_FILE} up -d --build'
+                    sh '''
+                        docker compose -f ${COMPOSE_FILE} up -d --build
+                    '''
                 }
             }
         }
@@ -27,7 +31,9 @@ pipeline {
         stage('Show Running Containers') {
             steps {
                 dir("${APP_DIR}") {
-                    sh 'docker compose -f ${COMPOSE_FILE} ps'
+                    sh '''
+                        docker compose -f ${COMPOSE_FILE} ps
+                    '''
                 }
             }
         }
@@ -48,6 +54,7 @@ pipeline {
     }
 
     post {
+
         success {
             echo "Deployment Successful!"
         }
