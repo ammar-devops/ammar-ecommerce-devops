@@ -8,6 +8,19 @@ pipeline {
 
     stages {
 
+        stage('Update Source Code') {
+            steps {
+                dir("${APP_DIR}") {
+                    sh '''
+                        echo "Updating source code..."
+                        git fetch origin
+                        git reset --hard origin/main
+                        git clean -fd
+                    '''
+                }
+            }
+        }
+
         stage('Stop Old Containers') {
             steps {
                 dir("${APP_DIR}") {
