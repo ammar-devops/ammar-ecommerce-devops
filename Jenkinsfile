@@ -7,18 +7,6 @@ pipeline {
         BRANCH = "main"
     }
 
-    stages {
-
-        stage('Update Source') {
-            steps {
-                dir("${APP_DIR}") {
-                    sh '''
-                        git fetch origin
-                        git reset --hard origin/${BRANCH}
-                    '''
-                }
-            }
-        }
 
         stage('Stop Old Containers') {
             steps {
