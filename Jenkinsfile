@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        COMPOSE_FILE = "docker-compose.prod.yml"
+    }
+
     stages {
 
         stage('Checkout') {
@@ -9,45 +13,93 @@ pipeline {
             }
         }
 
-        stage('Environment') {
+        stage('Environment Check') {
             steps {
                 sh '''
+                echo "===== Environment ====="
                 node -v
                 npm -v
                 git --version
                 docker --version
+                docker compose version
                 '''
             }
         }
 
-        stage('Backend') {
+        stage('Install Backend') {
             steps {
                 dir('backend') {
-                    sh '''
-                    npm install
-                    '''
+                    sh 'npm ci'
                 }
             }
         }
 
-        stage('Frontend') {
+        stage('Build Frontend') {
             steps {
                 dir('frontend') {
                     sh '''
-                    npm install
+                    npm ci
                     npm run build
                     '''
                 }
             }
         }
 
-        stage('Docker Build') {
+        stage('Build Docker Images') {
             steps {
                 sh '''
-                docker build -t ecommerce-backend:v1 ./backend
-                docker build -t ecommerce-frontend:v1 ./frontend
+                docker compose -f ${COMPOSE_FILE} build
                 '''
             }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh '''
+                docker compose -f ${COMPOSE_FILE} down
+                docker compose -f ${COMPOSE_FILE} up -d
+                '''
+            }
+        }
+
+        stage('Health Check') {
+            steps {
+                sh '''
+                sleep 10
+
+                curl -f http://localhost:5000/api/health
+
+                curl -I http://localhost
+                '''
+            }
+        }
+
+        stage('Docker Cleanup') {
+            steps {
+                sh '''
+                docker image prune -f
+                '''
+            }
+        }
+    }
+
+    post {
+
+        success {
+            echo "✅ Deployment Successful"
+        }
+
+        failure {
+            echo "❌ Deployment Failed"
+
+            sh '''
+            docker compose -f ${COMPOSE_FILE} ps
+            docker compose -f ${COMPOSE_FILE} logs --tail=50
+            '''
+        }
+
+        always {
+            echo "Pipeline Finished"
         }
     }
 }
