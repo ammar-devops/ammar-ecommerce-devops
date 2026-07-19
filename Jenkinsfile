@@ -13,48 +13,15 @@ pipeline {
             }
         }
 
-        stage('Prepare Environment') {
+        stage('Stop Old Containers') {
             steps {
                 sh '''
-                cp /opt/ecommerce/backend.env backend/.env
-                ls -la backend
+                docker compose -f ${COMPOSE_FILE} down || true
                 '''
             }
         }
 
-        stage('Environment Check') {
-            steps {
-                sh '''
-                echo "===== Environment ====="
-                node -v
-                npm -v
-                git --version
-                docker --version
-                docker compose version
-                '''
-            }
-        }
-
-        stage('Install Backend') {
-            steps {
-                dir('backend') {
-                    sh 'npm ci'
-                }
-            }
-        }
-
-        stage('Build Frontend') {
-            steps {
-                dir('frontend') {
-                    sh '''
-                    npm ci
-                    npm run build
-                    '''
-                }
-            }
-        }
-
-        stage('Deploy') {
+        stage('Deploy Application') {
             steps {
                 sh '''
                 docker compose -f ${COMPOSE_FILE} up -d --build
@@ -62,36 +29,25 @@ pipeline {
             }
         }
 
-        stage('Health Check') {
+        stage('Show Running Containers') {
             steps {
                 sh '''
-                echo "===================================="
-                echo "Waiting for containers..."
-                echo "===================================="
-
-                sleep 20
-
-                echo "Backend Response:"
-                curl http://localhost:5000/api/health
-
-                echo ""
-                echo "Frontend Response:"
-                curl -I http://localhost
-
-                echo ""
-                echo "Docker Status:"
                 docker compose -f ${COMPOSE_FILE} ps
-
-                echo ""
-                echo "Health Check Passed"
                 '''
             }
         }
 
-        stage('Docker Cleanup') {
+        stage('Health Check') {
             steps {
                 sh '''
-                docker image prune -f || true
+                echo "Waiting for backend..."
+                sleep 20
+
+                echo "Checking Backend Health..."
+                curl -f http://backend:5000/api/health
+
+                echo ""
+                echo "Application is Healthy."
                 '''
             }
         }
@@ -100,24 +56,32 @@ pipeline {
     post {
 
         success {
-            echo 'Deployment Successful'
-
-            sh '''
-            docker compose -f ${COMPOSE_FILE} ps
-            '''
+            echo 'Deployment Successful!'
         }
 
         failure {
-            echo 'Deployment Failed'
+            echo 'Deployment Failed!'
 
             sh '''
+            echo "========== Docker Compose Status =========="
             docker compose -f ${COMPOSE_FILE} ps || true
-            docker compose -f ${COMPOSE_FILE} logs --tail=100 || true
+
+            echo ""
+            echo "========== Backend Logs =========="
+            docker compose -f ${COMPOSE_FILE} logs backend --tail=100 || true
+
+            echo ""
+            echo "========== Frontend Logs =========="
+            docker compose -f ${COMPOSE_FILE} logs frontend --tail=100 || true
+
+            echo ""
+            echo "========== Database Logs =========="
+            docker compose -f ${COMPOSE_FILE} logs postgres --tail=100 || true
             '''
         }
 
         always {
-            echo 'Pipeline Finished'
+            cleanWs()
         }
     }
 }
