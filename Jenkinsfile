@@ -13,6 +13,15 @@ pipeline {
             }
         }
 
+        stage('Prepare Environment') {
+            steps {
+                sh '''
+                cp /opt/ecommerce/backend.env backend/.env
+                ls -la backend
+                '''
+            }
+        }
+
         stage('Environment Check') {
             steps {
                 sh '''
@@ -56,8 +65,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
-                docker compose -f ${COMPOSE_FILE} down
-                docker compose -f ${COMPOSE_FILE} up -d
+                docker compose -f ${COMPOSE_FILE} up -d --build
                 '''
             }
         }
@@ -65,7 +73,7 @@ pipeline {
         stage('Health Check') {
             steps {
                 sh '''
-                sleep 10
+                sleep 15
 
                 curl -f http://localhost:5000/api/health
 
@@ -86,20 +94,20 @@ pipeline {
     post {
 
         success {
-            echo "✅ Deployment Successful"
+            echo '✅ Deployment Successful'
         }
 
         failure {
-            echo "❌ Deployment Failed"
+            echo '❌ Deployment Failed'
 
             sh '''
-            docker compose -f ${COMPOSE_FILE} ps
-            docker compose -f ${COMPOSE_FILE} logs --tail=50
+            docker compose -f ${COMPOSE_FILE} ps || true
+            docker compose -f ${COMPOSE_FILE} logs --tail=100 || true
             '''
         }
 
         always {
-            echo "Pipeline Finished"
+            echo 'Pipeline Finished'
         }
     }
 }
