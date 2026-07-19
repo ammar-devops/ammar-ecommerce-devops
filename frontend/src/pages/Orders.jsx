@@ -9,7 +9,7 @@ function Orders() {
 
   async function loadOrders() {
     try {
-      const res = await fetch("/api/orders");
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/orders`);
       const data = await res.json();
       setOrders(data);
     } catch (err) {
