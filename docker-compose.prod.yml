@@ -16,10 +16,10 @@ services:
       - postgres
 
     healthcheck:
-    test: ["CMD", "wget", "--spider", "-q", "http://localhost:5000/api/health"]
-    interval: 30s
-    timeout: 5s
-    retries: 3
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
   frontend:
     build:
@@ -47,18 +47,3 @@ services:
 
 volumes:
   postgres-data:
-
-  nginx:
-  build:
-    context: ./nginx
-
-  image: ecommerce-nginx:prod
-
-  container_name: ecommerce-nginx
-
-  ports:
-    - "80:80"
-
-  depends_on:
-    - frontend
-    - backend
