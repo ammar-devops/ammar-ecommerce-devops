@@ -2,36 +2,45 @@ pipeline {
     agent any
 
     environment {
+        APP_DIR = "/home/ubuntu/ammar-ecommerce-devops"
         COMPOSE_FILE = "docker-compose.prod.yml"
+        BRANCH = "main"
     }
 
     stages {
 
-        stage('Checkout') {
+        stage('Update Source') {
             steps {
-                checkout scm
+                sh '''
+                cd ${APP_DIR}
+                git fetch origin
+                git reset --hard origin/${BRANCH}
+                '''
             }
         }
 
         stage('Stop Old Containers') {
             steps {
                 sh '''
+                cd ${APP_DIR}
                 docker compose -f ${COMPOSE_FILE} down || true
                 '''
             }
         }
 
-        stage('Deploy Application') {
+        stage('Deploy') {
             steps {
                 sh '''
+                cd ${APP_DIR}
                 docker compose -f ${COMPOSE_FILE} up -d --build
                 '''
             }
         }
 
-        stage('Show Running Containers') {
+        stage('Show Containers') {
             steps {
                 sh '''
+                cd ${APP_DIR}
                 docker compose -f ${COMPOSE_FILE} ps
                 '''
             }
@@ -40,14 +49,8 @@ pipeline {
         stage('Health Check') {
             steps {
                 sh '''
-                echo "Waiting for backend..."
                 sleep 20
-
-                echo "Checking Backend Health..."
-                curl -f http://backend:5000/api/health
-
-                echo ""
-                echo "Application is Healthy."
+                curl -f http://localhost:5000/api/health
                 '''
             }
         }
@@ -56,32 +59,22 @@ pipeline {
     post {
 
         success {
-            echo 'Deployment Successful!'
+            echo "Deployment Successful"
         }
 
         failure {
-            echo 'Deployment Failed!'
 
             sh '''
-            echo "========== Docker Compose Status =========="
+            cd ${APP_DIR}
+
             docker compose -f ${COMPOSE_FILE} ps || true
 
-            echo ""
-            echo "========== Backend Logs =========="
             docker compose -f ${COMPOSE_FILE} logs backend --tail=100 || true
 
-            echo ""
-            echo "========== Frontend Logs =========="
             docker compose -f ${COMPOSE_FILE} logs frontend --tail=100 || true
 
-            echo ""
-            echo "========== Database Logs =========="
             docker compose -f ${COMPOSE_FILE} logs postgres --tail=100 || true
             '''
-        }
-
-        always {
-            cleanWs()
         }
     }
 }
