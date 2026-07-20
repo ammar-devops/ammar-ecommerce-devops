@@ -25,6 +25,19 @@ pipeline {
             }
         }
 
+        stage('Workspace Test') {
+            steps {
+                sh '''
+                    echo "===== Workspace Test ====="
+                    pwd
+
+                    echo ""
+                    echo "===== Docker Compose Config ====="
+                    docker compose -f docker-compose.prod.yml config
+                '''
+            }
+        }
+
         stage('Stop Old Containers') {
             steps {
                 dir("${APP_DIR}") {
