@@ -9,6 +9,7 @@ import { CartProvider } from "./context/CartContext";
 import "./index.css";
 import "./styles/app.css";
 import "./styles/navbar.css";
+import "./styles/home-foundation.css";
 
 /* Component Styles */
 
