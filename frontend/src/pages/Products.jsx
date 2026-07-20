@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import ProductCard from "../components/ProductCard";
 import SearchBar from "../components/SearchBar";
@@ -8,8 +9,9 @@ import ErrorMessage from "../components/ErrorMessage";
 import { getProducts } from "../services/productService";
 
 function Products() {
+  const [searchParams] = useSearchParams();
   const [products, setProducts] = useState([]);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(() => searchParams.get("search") ?? "");
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -20,6 +22,10 @@ function Products() {
   useEffect(() => {
     loadProducts();
   }, []);
+
+  useEffect(() => {
+    setSearch(searchParams.get("search") ?? "");
+  }, [searchParams]);
 
   async function loadProducts() {
     try {
