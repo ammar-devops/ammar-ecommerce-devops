@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         COMPOSE_FILE = "docker-compose.prod.yml"
+        COMPOSE_PROJECT_NAME = "ammar-ecommerce-devops"
     }
 
     stages {
@@ -25,7 +26,10 @@ pipeline {
         stage('Docker Compose Validation') {
             steps {
                 sh '''
-                    docker compose -f ${COMPOSE_FILE} config
+                    docker compose \
+                      -p ${COMPOSE_PROJECT_NAME} \
+                      -f ${COMPOSE_FILE} \
+                      config
                 '''
             }
         }
@@ -33,7 +37,10 @@ pipeline {
         stage('Stop Old Containers') {
             steps {
                 sh '''
-                    docker compose -f ${COMPOSE_FILE} down || true
+                    docker compose \
+                      -p ${COMPOSE_PROJECT_NAME} \
+                      -f ${COMPOSE_FILE} \
+                      down || true
                 '''
             }
         }
@@ -41,7 +48,10 @@ pipeline {
         stage('Build & Deploy') {
             steps {
                 sh '''
-                    docker compose -f ${COMPOSE_FILE} up -d --build
+                    docker compose \
+                      -p ${COMPOSE_PROJECT_NAME} \
+                      -f ${COMPOSE_FILE} \
+                      up -d --build
                 '''
             }
         }
@@ -49,7 +59,10 @@ pipeline {
         stage('Show Running Containers') {
             steps {
                 sh '''
-                    docker compose -f ${COMPOSE_FILE} ps
+                    docker compose \
+                      -p ${COMPOSE_PROJECT_NAME} \
+                      -f ${COMPOSE_FILE} \
+                      ps
                 '''
             }
         }
@@ -63,7 +76,7 @@ pipeline {
                     curl -f http://backend:5000/api/health
 
                     echo ""
-                    echo "Deployment Successful"
+                    echo "Application is Healthy"
                 '''
             }
         }
@@ -72,27 +85,42 @@ pipeline {
     post {
 
         success {
-            echo "Pipeline Completed Successfully"
+            echo "Deployment Successful!"
         }
 
         failure {
 
-            echo "Pipeline Failed"
+            echo "Deployment Failed!"
 
             sh '''
-                docker compose -f ${COMPOSE_FILE} ps || true
+                docker compose \
+                  -p ${COMPOSE_PROJECT_NAME} \
+                  -f ${COMPOSE_FILE} \
+                  ps || true
 
                 echo ""
                 echo "===== Backend Logs ====="
-                docker compose -f ${COMPOSE_FILE} logs backend --tail=100 || true
+
+                docker compose \
+                  -p ${COMPOSE_PROJECT_NAME} \
+                  -f ${COMPOSE_FILE} \
+                  logs backend --tail=100 || true
 
                 echo ""
                 echo "===== Frontend Logs ====="
-                docker compose -f ${COMPOSE_FILE} logs frontend --tail=100 || true
+
+                docker compose \
+                  -p ${COMPOSE_PROJECT_NAME} \
+                  -f ${COMPOSE_FILE} \
+                  logs frontend --tail=100 || true
 
                 echo ""
                 echo "===== Database Logs ====="
-                docker compose -f ${COMPOSE_FILE} logs postgres --tail=100 || true
+
+                docker compose \
+                  -p ${COMPOSE_PROJECT_NAME} \
+                  -f ${COMPOSE_FILE} \
+                  logs postgres --tail=100 || true
             '''
         }
     }
