@@ -3,22 +3,31 @@ import { useCart } from "../hooks/useCart";
 function CartItem({ item }) {
   const { increaseQty, decreaseQty, removeItem } = useCart();
 
+  const image =
+    item.image_url && item.image_url.trim() !== ""
+      ? item.image_url
+      : "https://placehold.co/120x120?text=Product";
+
   return (
     <div className="cart-item">
-      <div>
+      <img src={image} alt={item.name} className="cart-image" />
+
+      <div className="cart-info">
         <h3>{item.name}</h3>
 
-        <p>₹ {item.price}</p>
+        <p>{item.brand}</p>
 
-        <p>Qty : {item.qty}</p>
-      </div>
+        <h2>₹ {Number(item.price).toLocaleString()}</h2>
 
-      <div>
-        <button onClick={() => decreaseQty(item.id)}>-</button>
+        <p>Quantity : {item.qty}</p>
 
-        <button onClick={() => increaseQty(item.id)}>+</button>
+        <div className="cart-buttons">
+          <button onClick={() => decreaseQty(item.id)}>-</button>
 
-        <button onClick={() => removeItem(item.id)}>Remove</button>
+          <button onClick={() => increaseQty(item.id)}>+</button>
+
+          <button onClick={() => removeItem(item.id)}>Remove</button>
+        </div>
       </div>
     </div>
   );

@@ -9,7 +9,9 @@ function Orders() {
 
   async function loadOrders() {
     try {
-      const res = await fetch(import.meta.env.VITE_ORDERS_API_URL || "/api/orders");
+      const res = await fetch(
+        import.meta.env.VITE_ORDERS_API_URL || "/api/orders",
+      );
       const data = await res.json();
       setOrders(data);
     } catch (err) {
@@ -22,7 +24,22 @@ function Orders() {
       <h1>My Orders</h1>
 
       {orders.length === 0 ? (
-        <p>No Orders Found</p>
+        <div
+          style={{
+            textAlign: "center",
+            padding: "60px",
+            background: "#fff",
+            borderRadius: "12px",
+          }}
+        >
+          <h2>📦 No Orders Yet</h2>
+
+          <p>You haven't placed any order.</p>
+
+          <a href="/products">
+            <button className="btn">Start Shopping</button>
+          </a>
+        </div>
       ) : (
         orders.map((order) => (
           <div className="card" key={order.id}>

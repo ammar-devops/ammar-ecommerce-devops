@@ -40,7 +40,7 @@ function ProductCard({ product }) {
       </p>
 
       <button className="btn" onClick={handleAddToCart}>
-        Add To Cart
+        🛒 Add To Cart
       </button>
     </div>
   );

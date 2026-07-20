@@ -636,3 +636,38 @@ h1 {
     flex-direction: column;
   }
 }
+
+.cart-item {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  padding: 20px;
+  margin: 20px 0;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.cart-image {
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: #f7f7f7;
+  padding: 10px;
+}
+
+.cart-info {
+  flex: 1;
+}
+
+.cart-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.cart-buttons button {
+  padding: 8px 14px;
+  cursor: pointer;
+}
