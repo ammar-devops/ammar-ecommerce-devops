@@ -8,21 +8,20 @@ pipeline {
 
     stages {
 
-        stage('Update Source Code') {
+        stage('Show Workspace') {
             steps {
-                dir("${APP_DIR}") {
-                    sh '''
-                        echo "===== Updating Source Code ====="
+                sh '''
+                    echo "===== Jenkins Workspace ====="
+                    pwd
 
-                        git fetch origin
-                        git reset --hard origin/main
-                        git clean -fd
+                    echo ""
+                    echo "Workspace Files:"
+                    ls -la
 
-                        echo ""
-                        echo "Current Commit:"
-                        git log --oneline -1
-                    '''
-                }
+                    echo ""
+                    echo "Git Commit:"
+                    git log --oneline -1 || true
+                '''
             }
         }
 
