@@ -2,69 +2,55 @@ pipeline {
     agent any
 
     environment {
-        APP_DIR = "/home/ubuntu/ammar-ecommerce-devops"
         COMPOSE_FILE = "docker-compose.prod.yml"
     }
 
     stages {
 
-        stage('Show Workspace') {
+        stage('Prepare Environment') {
             steps {
-                sh '''
-                    echo "===== Jenkins Workspace ====="
-                    pwd
+                withCredentials([file(credentialsId: 'backend-env', variable: 'ENV_FILE')]) {
+                    sh '''
+                        echo "===== Preparing Environment ====="
 
-                    echo ""
-                    echo "Workspace Files:"
-                    ls -la
+                        cp "$ENV_FILE" backend/.env
 
-                    echo ""
-                    echo "Git Commit:"
-                    git log --oneline -1 || true
-                '''
+                        echo "Environment file restored."
+                        ls -la backend
+                    '''
+                }
             }
         }
 
-        stage('Workspace Test') {
+        stage('Docker Compose Validation') {
             steps {
                 sh '''
-                    echo "===== Workspace Test ====="
-                    pwd
-
-                    echo ""
-                    echo "===== Docker Compose Config ====="
-                    docker compose -f docker-compose.prod.yml config
+                    docker compose -f ${COMPOSE_FILE} config
                 '''
             }
         }
 
         stage('Stop Old Containers') {
             steps {
-                dir("${APP_DIR}") {
-                    sh '''
-                        docker compose -f ${COMPOSE_FILE} down || true
-                    '''
-                }
+                sh '''
+                    docker compose -f ${COMPOSE_FILE} down || true
+                '''
             }
         }
 
-        stage('Deploy Application') {
+        stage('Build & Deploy') {
             steps {
-                dir("${APP_DIR}") {
-                    sh '''
-                        docker compose -f ${COMPOSE_FILE} up -d --build
-                    '''
-                }
+                sh '''
+                    docker compose -f ${COMPOSE_FILE} up -d --build
+                '''
             }
         }
 
         stage('Show Running Containers') {
             steps {
-                dir("${APP_DIR}") {
-                    sh '''
-                        docker compose -f ${COMPOSE_FILE} ps
-                    '''
-                }
+                sh '''
+                    docker compose -f ${COMPOSE_FILE} ps
+                '''
             }
         }
 
@@ -77,7 +63,7 @@ pipeline {
                     curl -f http://backend:5000/api/health
 
                     echo ""
-                    echo "Application is Healthy"
+                    echo "Deployment Successful"
                 '''
             }
         }
@@ -86,29 +72,28 @@ pipeline {
     post {
 
         success {
-            echo "Deployment Successful!"
+            echo "Pipeline Completed Successfully"
         }
 
         failure {
-            echo "Deployment Failed!"
 
-            dir("${APP_DIR}") {
-                sh '''
-                    docker compose -f ${COMPOSE_FILE} ps || true
+            echo "Pipeline Failed"
 
-                    echo ""
-                    echo "===== Backend Logs ====="
-                    docker compose -f ${COMPOSE_FILE} logs backend --tail=100 || true
+            sh '''
+                docker compose -f ${COMPOSE_FILE} ps || true
 
-                    echo ""
-                    echo "===== Frontend Logs ====="
-                    docker compose -f ${COMPOSE_FILE} logs frontend --tail=100 || true
+                echo ""
+                echo "===== Backend Logs ====="
+                docker compose -f ${COMPOSE_FILE} logs backend --tail=100 || true
 
-                    echo ""
-                    echo "===== Database Logs ====="
-                    docker compose -f ${COMPOSE_FILE} logs postgres --tail=100 || true
-                '''
-            }
+                echo ""
+                echo "===== Frontend Logs ====="
+                docker compose -f ${COMPOSE_FILE} logs frontend --tail=100 || true
+
+                echo ""
+                echo "===== Database Logs ====="
+                docker compose -f ${COMPOSE_FILE} logs postgres --tail=100 || true
+            '''
         }
     }
 }
