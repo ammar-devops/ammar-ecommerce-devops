@@ -1,23 +1,38 @@
 function Features() {
+  const features = [
+    {
+      icon: "🚚",
+      title: "Fast Delivery",
+      description: "Free & fast shipping across India with real-time tracking.",
+    },
+    {
+      icon: "💳",
+      title: "Secure Payments",
+      description: "100% secure checkout with trusted payment gateways.",
+    },
+    {
+      icon: "🛡️",
+      title: "Warranty",
+      description: "All premium products include manufacturer warranty.",
+    },
+    {
+      icon: "🎧",
+      title: "24×7 Support",
+      description: "Friendly customer support whenever you need help.",
+    },
+  ];
+
   return (
     <section className="features">
-      <div className="feature-card">
-        <h2>🚚</h2>
-        <h3>Fast Delivery</h3>
-        <p>Quick and reliable shipping.</p>
-      </div>
+      {features.map((feature) => (
+        <div className="feature-card" key={feature.title}>
+          <div className="feature-icon">{feature.icon}</div>
 
-      <div className="feature-card">
-        <h2>💳</h2>
-        <h3>Secure Payment</h3>
-        <p>Safe and trusted checkout.</p>
-      </div>
+          <h3>{feature.title}</h3>
 
-      <div className="feature-card">
-        <h2>📦</h2>
-        <h3>Quality Products</h3>
-        <p>Top-rated products at great prices.</p>
-      </div>
+          <p>{feature.description}</p>
+        </div>
+      ))}
     </section>
   );
 }

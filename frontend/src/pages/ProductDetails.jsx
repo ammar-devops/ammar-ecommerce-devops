@@ -27,9 +27,21 @@ function ProductDetails() {
     }
   }
 
-  if (loading) return <h2>Loading...</h2>;
+  if (loading) {
+    return (
+      <div className="details-loading">
+        <h2>Loading Product...</h2>
+      </div>
+    );
+  }
 
-  if (!product) return <h2>Product not found.</h2>;
+  if (!product) {
+    return (
+      <div className="details-loading">
+        <h2>Product Not Found</h2>
+      </div>
+    );
+  }
 
   const image =
     product.image_url && product.image_url.trim() !== ""
@@ -58,19 +70,23 @@ function ProductDetails() {
 
         <h2 className="price">₹ {Number(product.price).toLocaleString()}</h2>
 
-        <p>{product.description}</p>
+        <p className="details-description">{product.description}</p>
 
         <p className="stock">
           {product.stock > 0 ? "✅ In Stock" : "❌ Out of Stock"}
         </p>
 
         <div className="details-buttons">
-          <button className="btn" onClick={handleAddToCart}>
-            Add To Cart
+          <button
+            className="btn add-cart-btn"
+            onClick={handleAddToCart}
+            disabled={product.stock <= 0}
+          >
+            🛒 Add To Cart
           </button>
 
           <Link to="/products">
-            <button className="btn-outline">Back</button>
+            <button className="btn-outline">← Back to Products</button>
           </Link>
         </div>
       </div>

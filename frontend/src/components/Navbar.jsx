@@ -13,7 +13,7 @@ function Navbar() {
     <nav className="navbar">
       <div className="logo">
         <Link to="/">
-          🛒 <span>Ammar Shop</span>
+          🛍️ <span>Ammar Shop</span>
         </Link>
       </div>
 
@@ -42,7 +42,8 @@ function Navbar() {
 
       <div className="cart-box">
         <Link to="/cart">
-          🛒 Cart
+          <span>🛒 Cart</span>
+
           <span className="cart-badge">{totalItems}</span>
         </Link>
       </div>

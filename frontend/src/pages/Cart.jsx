@@ -7,33 +7,47 @@ function Cart() {
 
   if (cart.length === 0) {
     return (
-      <div>
-        <h1>Shopping Cart</h1>
+      <div className="empty-cart">
+        <h1>🛒 Shopping Cart</h1>
 
-        <h3>Your cart is empty.</h3>
+        <p>Your cart is empty.</p>
 
         <Link to="/products">
-          <button className="btn">Go Shopping</button>
+          <button className="btn">Continue Shopping</button>
         </Link>
       </div>
     );
   }
 
   return (
-    <div>
-      <h1>Shopping Cart</h1>
+    <div className="cart-page">
+      <h1>🛒 Shopping Cart</h1>
 
-      {cart.map((item) => (
-        <CartItem key={item.id} item={item} />
-      ))}
+      <div className="cart-layout">
+        <div className="cart-items">
+          {cart.map((item) => (
+            <CartItem key={item.id} item={item} />
+          ))}
+        </div>
 
-      <hr />
+        <div className="cart-summary">
+          <h2>Order Summary</h2>
 
-      <h2>Total : ₹ {total}</h2>
+          <div className="summary-row">
+            <span>Items</span>
+            <span>{cart.length}</span>
+          </div>
 
-      <Link to="/checkout">
-        <button className="btn">Proceed to Checkout</button>
-      </Link>
+          <div className="summary-row">
+            <span>Total</span>
+            <strong>₹ {Number(total).toLocaleString()}</strong>
+          </div>
+
+          <Link to="/checkout">
+            <button className="checkout-btn">Proceed to Checkout →</button>
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

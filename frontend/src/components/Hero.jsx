@@ -4,7 +4,7 @@ function Hero() {
   return (
     <section className="hero">
       <div className="hero-content">
-        <span className="hero-tag">🚀 AWS DevOps Portfolio Project</span>
+        <span className="hero-tag">🚀 Full Stack DevOps Portfolio Project</span>
 
         <h1>
           Premium Electronics
@@ -13,17 +13,17 @@ function Hero() {
         </h1>
 
         <p>
-          React • Express • PostgreSQL • Docker • Jenkins • AWS EC2 • RDS • S3 •
-          CloudFront
+          Built with React, Express, PostgreSQL, Docker, Jenkins and AWS. A
+          complete production-ready ecommerce application for DevOps practice.
         </p>
 
         <div className="hero-buttons">
           <Link to="/products">
-            <button className="btn">Shop Now</button>
+            <button className="btn">🛍 Shop Now</button>
           </Link>
 
           <Link to="/cart">
-            <button className="btn-outline">View Cart</button>
+            <button className="btn-outline">🛒 View Cart</button>
           </Link>
         </div>
 
@@ -45,7 +45,7 @@ function Hero() {
 
           <div className="stat">
             <h2>CI/CD</h2>
-            <p>Jenkins</p>
+            <p>Jenkins Pipeline</p>
           </div>
         </div>
       </div>

@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+
 import Home from "./pages/Home";
 import Products from "./pages/Products";
 import Cart from "./pages/Cart";
@@ -14,10 +15,10 @@ import "./App.css";
 
 function App() {
   return (
-    <>
+    <div className="app">
       <Navbar />
 
-      <div className="container">
+      <main className="main-content">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products />} />
@@ -27,10 +28,10 @@ function App() {
           <Route path="/orders" element={<Orders />} />
           <Route path="/products/:id" element={<ProductDetails />} />
         </Routes>
-      </div>
+      </main>
 
       <Footer />
-    </>
+    </div>
   );
 }
 

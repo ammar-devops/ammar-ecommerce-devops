@@ -2,14 +2,28 @@ import { Link } from "react-router-dom";
 
 function OrderSuccess() {
   return (
-    <div style={{ textAlign: "center", marginTop: "80px" }}>
-      <h1>🎉 Order Placed Successfully</h1>
+    <div className="success-page">
+      <div className="success-card">
+        <div className="success-icon">✅</div>
 
-      <p>Thank you for shopping with us.</p>
+        <h1>Order Placed Successfully!</h1>
 
-      <Link to="/products">
-        <button className="btn">Continue Shopping</button>
-      </Link>
+        <p>
+          Thank you for shopping with <strong>Ammar Shop</strong>.
+          <br />
+          Your order has been received and is being processed.
+        </p>
+
+        <div className="success-buttons">
+          <Link to="/products">
+            <button className="btn">🛍 Continue Shopping</button>
+          </Link>
+
+          <Link to="/orders">
+            <button className="btn-outline">📦 View My Orders</button>
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

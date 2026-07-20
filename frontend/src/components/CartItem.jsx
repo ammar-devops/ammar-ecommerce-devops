@@ -15,18 +15,24 @@ function CartItem({ item }) {
       <div className="cart-info">
         <h3>{item.name}</h3>
 
-        <p>{item.brand}</p>
+        <p className="brand">{item.brand}</p>
 
-        <h2>₹ {Number(item.price).toLocaleString()}</h2>
-
-        <p>Quantity : {item.qty}</p>
+        <h2 className="price">₹ {Number(item.price).toLocaleString()}</h2>
 
         <div className="cart-buttons">
-          <button onClick={() => decreaseQty(item.id)}>-</button>
+          <button className="qty-btn" onClick={() => decreaseQty(item.id)}>
+            −
+          </button>
 
-          <button onClick={() => increaseQty(item.id)}>+</button>
+          <span className="qty-value">{item.qty}</span>
 
-          <button onClick={() => removeItem(item.id)}>Remove</button>
+          <button className="qty-btn" onClick={() => increaseQty(item.id)}>
+            +
+          </button>
+
+          <button className="remove-btn" onClick={() => removeItem(item.id)}>
+            🗑 Remove
+          </button>
         </div>
       </div>
     </div>

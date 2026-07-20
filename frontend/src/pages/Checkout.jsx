@@ -38,7 +38,6 @@ function Checkout() {
       });
 
       alert(response.message);
-
       navigate("/success");
     } catch (err) {
       console.error(err);
@@ -47,24 +46,58 @@ function Checkout() {
   }
 
   return (
-    <div className="checkout">
-      <h1>Checkout</h1>
+    <div className="checkout-page">
+      <h1>🧾 Checkout</h1>
 
-      <form onSubmit={handleSubmit}>
-        <input name="name" placeholder="Full Name" onChange={handleChange} />
+      <div className="checkout-layout">
+        <form className="checkout-form" onSubmit={handleSubmit}>
+          <label>Full Name</label>
+          <input
+            name="name"
+            placeholder="Enter your full name"
+            value={form.name}
+            onChange={handleChange}
+          />
 
-        <input name="phone" placeholder="Phone" onChange={handleChange} />
+          <label>Phone Number</label>
+          <input
+            name="phone"
+            placeholder="Enter your phone number"
+            value={form.phone}
+            onChange={handleChange}
+          />
 
-        <textarea
-          name="address"
-          placeholder="Address"
-          onChange={handleChange}
-        />
+          <label>Delivery Address</label>
+          <textarea
+            name="address"
+            placeholder="Enter complete delivery address"
+            value={form.address}
+            onChange={handleChange}
+          />
 
-        <h2>Total : ₹ {total}</h2>
+          <button type="submit" className="checkout-btn">
+            ✅ Place Order
+          </button>
+        </form>
 
-        <button className="btn">Place Order</button>
-      </form>
+        <div className="checkout-summary">
+          <h2>Order Summary</h2>
+
+          <div className="summary-row">
+            <span>Total Items</span>
+            <span>{cart.length}</span>
+          </div>
+
+          <div className="summary-row">
+            <span>Grand Total</span>
+            <strong>₹ {Number(total).toLocaleString()}</strong>
+          </div>
+
+          <p className="secure-text">
+            🔒 Secure Checkout with protected payment flow.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

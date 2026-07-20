@@ -39,8 +39,12 @@ function ProductCard({ product }) {
         {product.stock > 0 ? "✅ In Stock" : "❌ Out of Stock"}
       </p>
 
-      <button className="btn" onClick={handleAddToCart}>
-        🛒 Add To Cart
+      <button
+        className="btn add-cart-btn"
+        onClick={handleAddToCart}
+        disabled={product.stock <= 0}
+      >
+        {product.stock > 0 ? "🛒 Add To Cart" : "Out of Stock"}
       </button>
     </div>
   );
