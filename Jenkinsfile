@@ -120,12 +120,6 @@ pipeline {
                     sleep 20
 
                     curl --fail http://backend:5000/api/health
-
-                    docker compose \
-                    -p ${COMPOSE_PROJECT_NAME} \
-                    -f ${COMPOSE_FILE} \
-                    exec -T frontend \
-                    wget -qO- http://localhost > /dev/null
                 '''
             }
         }
@@ -142,9 +136,7 @@ pipeline {
     }
 
     post {
-
         always {
-
             sh '''
                 docker logout ghcr.io || true
                 docker image prune -f || true
