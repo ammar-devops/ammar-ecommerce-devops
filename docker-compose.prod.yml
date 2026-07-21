@@ -1,10 +1,6 @@
 services:
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.prod
-
-    image: ecommerce-backend:prod
+    image: ghcr.io/ammar-devops/ecommerce-backend:latest
 
     ports:
       - "5000:5000"
@@ -15,24 +11,25 @@ services:
     depends_on:
       - postgres
 
+    restart: unless-stopped
+
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:5000/api/health"]
+      test:
+        ["CMD", "wget", "--spider", "-q", "http://localhost:5000/api/health"]
       interval: 30s
       timeout: 5s
       retries: 3
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.prod
-
-    image: ecommerce-frontend:prod
+    image: ghcr.io/ammar-devops/ecommerce-frontend:latest
 
     ports:
       - "80:80"
 
     depends_on:
       - backend
+
+    restart: unless-stopped
 
   postgres:
     image: postgres:16
@@ -44,6 +41,8 @@ services:
 
     volumes:
       - postgres-data:/var/lib/postgresql/data
+
+    restart: unless-stopped
 
 volumes:
   postgres-data:
