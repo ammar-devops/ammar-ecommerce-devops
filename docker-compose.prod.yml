@@ -1,12 +1,13 @@
 services:
   backend:
     image: ghcr.io/ammar-devops/ecommerce-backend:latest
+    container_name: ecommerce-backend
 
     ports:
       - "5000:5000"
 
     env_file:
-      - ./backend/.env
+      - ./backend/.env.production
 
     depends_on:
       - postgres
@@ -22,6 +23,7 @@ services:
 
   frontend:
     image: ghcr.io/ammar-devops/ecommerce-frontend:latest
+    container_name: ecommerce-frontend
 
     ports:
       - "80:80"
@@ -33,6 +35,7 @@ services:
 
   postgres:
     image: postgres:16
+    container_name: ecommerce-postgres
 
     environment:
       POSTGRES_USER: ammar
@@ -43,6 +46,12 @@ services:
       - postgres-data:/var/lib/postgresql/data
 
     restart: unless-stopped
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ammar -d ecommerce"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres-data:
