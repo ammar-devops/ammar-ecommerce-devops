@@ -117,14 +117,11 @@ pipeline {
         stage('Health Check') {
             steps {
                 sh '''
-                    echo "Waiting for application to start..."
+                    echo "Waiting for backend..."
                     sleep 20
 
-                    curl --retry 5 \
-                         --retry-delay 5 \
-                         --retry-connrefused \
-                         --fail \
-                         http://localhost:5000/api/health
+                    docker exec ecommerce-backend \
+                        wget -qO- http://localhost:5000/api/health
 
                     echo "✅ Backend Health Check Passed"
                 '''
